@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////////
 //
-//	Copyright 2012 Piotr Walczyszyn (http://outof.me | @pwalczyszyn)
+//    Copyright 2012 Piotr Walczyszyn (http://outof.me | @pwalczyszyn)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@
                  * @param view {Backbone.View}
                  * @param options {*} Transition parameters can be passed like: transition, reverse, showLoadMsg or loadMsgDelay
                  */
-                pushView:function jqmNavigator_pushView(view, options) {
+                pushView:function jqmNavigator_pushView(view, options, endCallback) {
                     var containerViews = this._getPageContainerViews(options);
 
                     // Pushing the view to the stack
@@ -72,9 +72,16 @@
                     // Rendering the view
                     view.render();
 
+                    if (endCallback){
+                        view.$el.one('pageshow', function(){
+                            endCallback();
+                        });
+                    }
+
                     if (!$.mobile.firstPage) {
                         // Adding data-role with page value
                         view.$el.attr('data-role', 'page');
+
                         // First time initialization
                         if (!$.mobile.autoInitializePage) $.mobile.initializePage();
                     } else {
@@ -102,7 +109,7 @@
 
                         fromView.$el.one('pagehide', function (event) {
                             // Detaching view from DOM
-                            fromView.$el.detach();
+                            fromView.remove();
                         });
 
                         // Changing to view below current one
@@ -112,6 +119,50 @@
                             changeHash:false,
                             pageContainer:containerViews.pageContainer
                         }, options));
+
+                        return true;
+
+                    } else {
+                        return false;
+                    }
+                },
+
+                /**
+                 * Pops views from a stack up to the number (N) supplied.
+                 *
+                 * @param N {Integer} The number of views to pop back
+                 * @param options {*} Transition parameters can be passed like: transition, reverse, showLoadMsg or loadMsgDelay
+                 */
+                popBackNViews: function jqmNavigator_popBackNViews(N, options) {
+                    var containerViews = this._getPageContainerViews(options);
+                    if (containerViews.views.length > 1) {
+                        if (containerViews.views.length - N > 1) {
+                            // From view ref
+                            var fromView = containerViews.views.pop(),
+                            // To view ref
+                                toView = containerViews.views[containerViews.views.length - N],
+                            // Removed views
+                                removedViews = containerViews.views.splice((containerViews.views.length - N) + 1, containerViews.views.length - 1);
+
+                            fromView.$el.one('pagehide', function (event) {
+                                //Detach views in the middle
+                                removedViews.forEach(function (item) {
+                                    item.remove();
+                                }, this);
+                                //Detach origin
+                                fromView.remove();
+                            });
+
+                            // Changing to view below current one
+                            $.mobile.changePage(toView.$el, $.extend({
+                                role:'page',
+                                reverse:true,
+                                changeHash:false,
+                                pageContainer:containerViews.pageContainer
+                            }, options));
+                        } else {
+                            console.log('Can\'t pop first view or below, you can replace it instead!');
+                        }
 
                     } else {
                         console.log('Can\'t pop first view, you can replace it instead!');
@@ -135,7 +186,7 @@
 
                         fromView.$el.one('pagehide', function (event) {
                             removedViews.forEach(function (item) {
-                                item.$el.detach();
+                                item.remove();
                             }, this);
                         });
 
@@ -164,7 +215,7 @@
                         var fromView = containerViews.views.pop();
                         fromView.$el.one('pagehide', function (event) {
                             // Detaching view from DOM
-                            fromView.$el.detach();
+                            fromView.remove();
                         });
 
                         // Pushing the view to the stack
@@ -198,7 +249,7 @@
 
                         fromView.$el.one('pagehide', function (event) {
                             removedViews.forEach(function (item) {
-                                item.$el.detach();
+                                item.remove();
                             }, this);
                         });
 
