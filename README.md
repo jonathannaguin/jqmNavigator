@@ -51,6 +51,12 @@ Popping a view from the stack:
 $.mobile.jqmNavigator.popView();
 ```
 
+Popping N views from the stack:
+
+```js
+$.mobile.jqmNavigator.popBackNViews(N);
+```
+
 Popping all views except the first one from the stack:
 
 ```js
