@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////
 //
-//	Copyright 2012 Piotr Walczyszyn (http://outof.me | @pwalczyszyn)
-//  Copyright 2013 Jonathan Nunez (jonathan.naguin@gmail.com)
+//    Copyright 2012 Piotr Walczyszyn (http://outof.me | @pwalczyszyn)
+//    Copyright 2013 Jonathan Nunez (jonathan.naguin@gmail.com)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -160,7 +160,7 @@
                     var containerViews = this._getPageContainerViews(options);
 
                     if (containerViews.views.length > 1) {
-                        if (containerViews.views.length - N > 1) {
+                        if (containerViews.views.length - N >= 1) {
 
                             // From view ref
                             var fromView = containerViews.views.pop();
